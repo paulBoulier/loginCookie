@@ -11,19 +11,6 @@ class InputValidateItem {
         this.eventType = eventType
         this.link = link
 
-        this.success = {
-            inputLogic: null,
-            messageLogic: null,
-            message: ""
-        }
-
-        this.error = {
-            inputLogic: null,
-            messageLogic: null,
-            message: ""
-        }
-
-        this.regexList = []
     }
 
     /**
@@ -32,14 +19,13 @@ class InputValidateItem {
      * @param {String} messageClass nom de la class à ajouter sur l'input
      * @param {String} message contenu de l'élément message
      */
-    onsuccess(inputLogic, messageLogic, message) {
+    onsuccess(inputLogic, messageLogic) {
 
-        if (typeof inputLogic != "string" && typeof inputLogic != "function") throw new Error("Le premier argument doit être de type string ou de type function")
-        if (typeof messageLogic != "string" && typeof messageLogic != "function") throw new Error("Le second argument doit être de type string ou de type function")
+        if (typeof inputLogic != "string" && !Array.isArray(inputLogic)) throw new Error("Le premier argument doit être de type string ou de type array")
+        if (typeof messageLogic != "string" && !Array.isArray(messageLogic)) throw new Error("Le second argument doit être de type string ou de type array")
 
         if (inputLogic != "") this.success.inputLogic = inputLogic
         if (messageLogic != "") this.success.messageLogic = messageLogic
-        if (message != "") this.success.message = message
     }
 
     /**
@@ -48,22 +34,27 @@ class InputValidateItem {
      * @param {String|Function} messageLogic nom de la classe ou callback à ajouter sur l'input
      * @param {String} message contenu de l'élément message
      */
-    onerror(inputLogic, messageLogic, message) {
+    onerror(inputLogic, messageLogic) {
 
         if (typeof inputLogic != "string" && typeof inputLogic != "function") throw new Error("Le premier argument doit être de type string ou de type function")
         if (typeof messageLogic != "string" && typeof messageLogic != "function") throw new Error("Le second argument doit être de type string ou de type function")
 
         if (inputLogic != "") this.error.inputLogic = inputLogic
         if (messageLogic != "") this.error.messageLogic = messageLogic
-        if (message != "") this.error.message = message
     }
 
-    check() {
-        const args = arguments
-        for (let i = 0; i < args.length; i++) {
-            if (args[i].constructor.name != "RegExp") throw new Error("L'argument n°" + i + " n'est pas une expression régulière")
+    test(successMessage, errorList) {
+        
+        if(typeof successMessage != "string") throw new Error("Le premier argument doit être une string")
+        if(!errorList) throw new Error("Il faut au minimum un array comme second argument avec un object contenant id et test")
+
+        for(const error of errorList) {
+            if(!error.test || !error.message) {
+                throw new Error("L'item n° " + i + " n'est pas formaté de la bonne manière. Nécessite les propriétés test et message")
+            }
         }
-        this.regexList = [...args]
+
+
     }
 
 }
@@ -103,43 +94,6 @@ export default class InputValidate {
             if (!(arg instanceof InputValidateItem)) throw new Error("Le lien n'est pas une instance de InputValidateItem")
         }
         for (const IVI of args) {
-            IVI.input.addEventListener(IVI.eventType, function () {
-                const isSuccess = IVI.regexList.every(regex => regex.test(this.value))
-                if (isSuccess) {
-                    if (IVI.success.message != "") IVI.message.innerHTML = IVI.success.message
-                    if (IVI.success.inputLogic != null) {
-                        if (typeof IVI.success.inputLogic == "string") {
-                            if (IVI.success.inputLogic) IVI.input.classList.remove(IVI.error.inputLogic)
-                            IVI.input.classList.add(IVI.success.inputLogic)
-                        }
-                        else IVI.success.inputLogic.call(IVI.input)
-                    }
-                    if (IVI.success.messageLogic != null) {
-                        if (typeof IVI.success.messageLogic == "string") {
-                            if (IVI.success.messageLogic) IVI.message.classList.remove(IVI.error.messageLogic)
-                            IVI.input.classList.add(IVI.success.messageLogic)
-                        }
-                        else IVI.success.messageLogic.call(IVI.message)
-                    }
-                } else {
-                    console.log(IVI.message)
-                    if (IVI.error.message != "") IVI.message.innerHTML = IVI.error.message
-                    if (IVI.error.inputLogic != null) {
-                        if (typeof IVI.error.inputLogic == "string") {
-                            if (IVI.error.inputLogic) IVI.input.classList.remove(IVI.success.inputLogic)
-                            IVI.input.classList.add(IVI.error.inputLogic)
-                        }
-                        else IVI.error.inputLogic.call(IVI.input)
-                    }
-                    if (IVI.error.messageLogic != null) {
-                        if (typeof IVI.error.messageLogic == "string") {
-                            if (IVI.error.messageLogic) IVI.message.classList.remove(IVI.success.messageLogic)
-                            IVI.input.classList.add(IVI.error.messageLogic)
-                        }
-                        else IVI.error.messageLogic.call(IVI.message)
-                    }
-                }
-            })
         }
     }
 
