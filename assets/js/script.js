@@ -3,10 +3,19 @@ import InputValidate from "./InputValidate.js"
 const inputValidate = new InputValidate(document.getElementsByTagName("form")[0])
 
 const lastnammeValidate = inputValidate.set("#lastname", ".feedback", "blur" /* link */)
-lastnammeValidate.onsuccess(["is-valid"], ["text-success", function () { this.style.display = "block" }], "Tout est ok")
-lastnammeValidate.onerror(["is-invalid"], ["text-danger", function () { this.style.display = "block" }], "Le nom n'est pas correct")
-console.log(Object.keys(lastnammeValidate))
-lastnammeValidate.check(/^[a-zA-Z\u00C0-\u017F']+$/ /* sous check ? */)
+lastnammeValidate.onsuccess("is-valid", ["text-success", function () { this.style.display = "block" }])
+lastnammeValidate.onerror("is-invalid", ["text-danger", function () { this.style.display = "block" }])
+lastnammeValidate.test("Tout est ok",
+    [{
+        test: /^ *$/,
+        message: "Ecrivez votre nom",
+
+    },
+    {
+        test: /^[a-zA-Z\u00C0-\u017F']+$/,
+        message: "Le nom n'est pas correct"
+    }]
+)
 inputValidate.add(lastnammeValidate, /* ... */)
 
 // (?:(?:https?:\/\/)?(?:www\.)?)?instagram\.com\/[a-zA-Z.0-9]+\/?
