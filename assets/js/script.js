@@ -21,3 +21,11 @@ inputValidate.add(lastnammeValidate, /* ... */)
 // (?:(?:https?:\/\/)?(?:www\.)?)?instagram\.com\/[a-zA-Z.0-9]+\/?
 // https://www.jquery-az.com/bootstrap4/demo.php?ex=76.0_6
 // https://getbootstrap.com/docs/5.0/forms/validation/
+
+/**
+ * function() {
+ *  this.style.display = "block" 
+ * }
+ * 
+ * 
+ */
